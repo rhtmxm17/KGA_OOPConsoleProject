@@ -17,11 +17,17 @@
             private set => map[pt.x, pt.y] = value;
         }
 
-        public StageMap(Point pt)
+        public StageMap(int x, int y)
         {
-            map = new Tile[pt.x, pt.y];
+            map = new Tile[x, y];
         }
 
+        static StageMap CreateSampleMap()
+        {
+            StageMap sample = new StageMap(8, 8);
+            
 
+            return sample;
+        }
     }
 }

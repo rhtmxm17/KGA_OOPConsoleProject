@@ -2,29 +2,25 @@
 
 namespace ConsoleSokobanOOP
 {
-    public class Wall : StageObject
+    public class Wall : TileAttribute
     {
-        public override void AwayFrom(Tile tile)
+        public override void RemoveFrom(Tile tile)
         {
-            Debug.Assert(false, "제거 불가능한 물체가 제거됨");
+            Debug.Assert(false, "제거가 고려되지 않은 속성이 제거됨");
             tile.State = TileState.Empty;
             tile.OnEntry -= IncorrectEntry;
         }
 
-        public override void EntryTo(Tile tile)
+        public override void SetAttribute(Tile tile)
         {
+            tile.RenderString = "▦";
             tile.State = TileState.Blocked;
             tile.OnEntry += IncorrectEntry;
         }
 
-        public override string GetRenderString()
-        {
-            return "▦";
-        }
-
         private void IncorrectEntry(StageObject obj)
         {
-            Debug.Assert(obj == this, "벽에 진입 명령됨");
+            Debug.Assert(false, "벽에 진입 명령됨");
         }
     }
 }

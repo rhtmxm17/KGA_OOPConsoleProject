@@ -2,18 +2,19 @@
 
 namespace ConsoleSokobanOOP
 {
-    public class Goal : StageObject
+    public class Goal : TileAttribute
     {
         public int Count { get; set; } = 0;
 
-        public override void AwayFrom(Tile tile)
+        public override void RemoveFrom(Tile tile)
         {
-            Debug.Assert(false, "제거 불가능한 물체가 제거됨");
+            Debug.Assert(false, "제거가 고려되지 않은 속성이 제거됨");
             Count--;
         }
 
-        public override void EntryTo(Tile tile)
+        public override void SetAttribute(Tile tile)
         {
+            tile.RenderString = "○";
             Count++;
             tile.OnEntry += obj =>
             {
@@ -31,11 +32,6 @@ namespace ConsoleSokobanOOP
                     ball.IsOnGole = false;
                 }
             };
-        }
-
-        public override string GetRenderString()
-        {
-            return "○";
         }
     }
 }

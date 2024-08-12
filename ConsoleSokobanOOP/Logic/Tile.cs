@@ -1,30 +1,31 @@
-﻿using System.Diagnostics;
-
-namespace ConsoleSokobanOOP
+﻿namespace ConsoleSokobanOOP
 {
     public class Tile
     {
+        public string RenderString { get; set; } = "  ";
+
         public TileState State { get; set; }
 
         // 타일에 속성을 부여하는 물체(Goal, Wall)가 설정하기 위한 이벤트
         public event Action<StageObject>? OnEntry;
         public event Action<StageObject>? OnAway;
 
-        private List<StageObject> objects = new List<StageObject>();
+        private StageObject? fluidObj = null;
 
         public void Entry(StageObject obj)
         {
             OnEntry?.Invoke(obj);
-            objects.Add(obj);
+            fluidObj = obj;
         }
 
-        public void Away(StageObject obj)
+        public void Away()
         {
-            // 게임 로직상 objects.Count는 대부분 0~1개이므로 단순 탐색 수행
-            bool result = objects.Remove(obj);
-            Debug.Assert(result);
+            if (fluidObj is null)
+                return;
 
-            OnAway?.Invoke(obj);
+            OnAway?.Invoke(fluidObj);
+
+            fluidObj = null;
         }
     }
 }
