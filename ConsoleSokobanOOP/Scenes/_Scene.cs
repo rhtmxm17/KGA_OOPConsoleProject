@@ -2,9 +2,15 @@
 {
     public abstract class Scene
     {
-        public ConsoleKey InputKey { get; set; }
+        public ConsoleKey InputKey { get; private set; }
 
-        private Scene() { }
+        private Game game;
+
+        public Scene(Game game)
+        {
+            this.game = game;
+        }
+
 
         public virtual void Input()
         {
@@ -28,18 +34,22 @@
 
         public abstract void Exit();
 
-        public static Scene SceneFactory(SceneType type, int arg = 0)
+        protected void ChangeScene(Scene scene) => game.ChangeScene(scene);
+
+        public Scene SceneFactory(SceneType type, int arg = 0) => SceneFactory(game, type, arg);
+
+        public static Scene SceneFactory(Game game, SceneType type, int arg = 0)
         {
             switch (type)
             {
                 case SceneType.Title:
-                    throw new NotImplementedException();
+                    return new TitleScene(game);
                 case SceneType.Setting:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException("TODO: 셋팅 씬 생성");
                 case SceneType.Select:
-                    throw new NotImplementedException();
+                    return new SelectScene(game);
                 case SceneType.Stage:
-                    throw new NotImplementedException();
+                    throw new NotImplementedException($"TODO: 스테이지 씬 생성, arg == {arg}");
                 default:
                     throw new ArgumentException("잘못된 SceneType");
             }

@@ -7,7 +7,12 @@ namespace ConsoleSokobanOOP
         private bool isRunning = false;
 
         public int FrameMilliSec { get; set; } = 100;
-        public Scene currentScene { get; private set; } = Scene.SceneFactory(SceneType.Title);
+        public Scene currentScene { get; private set; }
+
+        public Game()
+        {
+            currentScene = Scene.SceneFactory(this, SceneType.Title);
+        }
 
         public void Run()
         {
@@ -29,7 +34,9 @@ namespace ConsoleSokobanOOP
 
         public void Start()
         {
-
+            isRunning = true;
+            currentScene.Enter();
+            Console.CursorVisible = false;
         }
 
         public void End()
