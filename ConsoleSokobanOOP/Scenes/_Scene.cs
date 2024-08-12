@@ -17,7 +17,10 @@
             if (Console.KeyAvailable)
             {
                 InputKey = Console.ReadKey(true).Key;
-                Console.In.Dispose(); // 버퍼에 남은 입력이 쌓여있다면 제거
+
+                // 키 길게 누르기로 입력이 쌓여있으면 제거
+                while (Console.KeyAvailable)
+                    _ = Console.ReadKey(true);
             }
             else
             {
