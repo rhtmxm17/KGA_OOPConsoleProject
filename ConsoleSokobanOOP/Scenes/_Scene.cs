@@ -68,7 +68,7 @@
                         s_selectScene = new SelectScene(game);
                     return s_selectScene;
                 case SceneType.Stage:
-                    return new StageScene(game, DataContainer.GetStageData(0));
+                    return new StageScene(game, DataContainer.GetStageData(arg));
                 default:
                     throw new ArgumentException("잘못된 SceneType");
             }

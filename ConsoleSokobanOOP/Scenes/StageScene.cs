@@ -42,6 +42,19 @@ namespace ConsoleSokobanOOP
                 }
             }
 
+            // 벽
+            Wall wall = new Wall();
+            foreach (var pt in data.wall)
+            {
+                wall.SetAttribute(Map(pt));
+            }
+
+            // 골
+            foreach (var pt in data.goal)
+            {
+                goal.SetAttribute(Map(pt));
+            }
+
             // 플레이어
             DynamicLayer.Add(player);
             player.Point = data.player;
@@ -54,19 +67,6 @@ namespace ConsoleSokobanOOP
                 DynamicLayer.Add(ball);
                 ball.Point = pt;
                 Map(pt).Entry(ball);
-            }
-
-            // 벽
-            Wall wall = new Wall();
-            foreach (var pt in data.wall)
-            {
-                wall.SetAttribute(Map(pt));
-            }
-
-            // 골
-            foreach (var pt in data.goal)
-            {
-                goal.SetAttribute(Map(pt));
             }
 
             // 고정 출력

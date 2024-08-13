@@ -9,40 +9,52 @@ namespace ConsoleSokobanOOP
 
         static DataContainer()
         {
-            stageData[0] = new StageSetup
+            for (int stage = 0; stage < Constant.Stages; stage++)
             {
-                sizeX = 8,
-                sizeY = 8,
-                player = { x = 4, y = 4 },
-                balls =
-                [
-                    new Point { x = 3, y = 3 },
-                    new Point { x = 3, y = 5 },
-                    new Point { x = 4, y = 3 },
-                    new Point { x = 5, y = 4 },
-                ],
-                goal =
-                [
-                    new Point { x = 1, y = 3 },
-                    new Point { x = 3, y = 6 },
-                    new Point { x = 4, y = 1 },
-                    new Point { x = 6, y = 4 },
-                ],
-                wall = new Point[28],
-            };
+                using (StreamReader stream = new StreamReader($"../../../Data/stage{stage + 1}.CSV"))
+                {
+                    List<Point> ballTemp = new();
+                    List<Point> wallTemp = new();
+                    List<Point> goalTemp = new();
 
-            int index = 0;
-            for (int i = 0; i < 8; i++)
-            {
-                stageData[0].wall[index++] = new Point { x = 0, y = i };
-                stageData[0].wall[index++] = new Point { x = 7, y = i };
+                    int line = 0;
+                    int cell = 0;
+                    for (line = 0; false == stream.EndOfStream; line++)
+                    {
+                        var symbols = stream.ReadLine()?.Split(',') ?? Array.Empty<string>();
+                        for (cell = 0; cell < symbols.Length; cell++)
+                        {
+                            switch(symbols[cell])
+                            {
+                                case "W":
+                                    wallTemp.Add(new Point { x = line, y = cell });
+                                    break;
+                                case "G":
+                                    goalTemp.Add(new Point { x = line, y = cell });
+                                    break;
+                                case "B":
+                                    ballTemp.Add(new Point { x = line, y = cell });
+                                    break;
+                                case "GB":
+                                    goalTemp.Add(new Point { x = line, y = cell });
+                                    ballTemp.Add(new Point { x = line, y = cell });
+                                    break;
+                                case "P":
+                                    stageData[stage].player = new Point { x = line, y = cell };
+                                    break;
+                            }
+                        }
+                    }
+
+                    stageData[stage].sizeX = line;
+                    stageData[stage].sizeY = cell;
+                    stageData[stage].balls = ballTemp.ToArray();
+                    stageData[stage].wall = wallTemp.ToArray();
+                    stageData[stage].goal = goalTemp.ToArray();
+                }
             }
 
-            for (int i = 1; i < 7; i++)
-            {
-                stageData[0].wall[index++] = new Point { x = i, y = 0 };
-                stageData[0].wall[index++] = new Point { x = i, y = 7 };
-            }
+            return;
         }
 
         public static void Setup(RenderMode mode)
@@ -58,9 +70,9 @@ namespace ConsoleSokobanOOP
             else if (mode == RenderMode.Safe)
             {
                 strings.Add("Wall", "##");
-                strings.Add("Ball", "＠");
+                strings.Add("Ball", "ㅇ");
                 strings.Add("Player", "ⓟ");
-                strings.Add("Goal", "ㅇ");
+                strings.Add("Goal", "ㅁ");
 
             }
             else
