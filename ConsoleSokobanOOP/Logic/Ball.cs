@@ -4,24 +4,27 @@
     {
         public bool IsOnGole { get; set; } = false;
 
-        public override string RenderString
+        public override string RenderString => "●";
+
+        public override ConsoleColor Color
         {
             get
             {
                 if (IsOnGole)
-                    return "ⓞ";
+                    return ConsoleColor.DarkBlue;
                 else
-                    return "●";
+                    return ConsoleColor.Blue;
             }
         }
+
         public override void AwayFrom(Tile tile)
         {
-            tile.State = TileState.Empty;
+            tile.state = TileState.Empty;
         }
 
         public override void EntryTo(Tile tile)
         {
-            tile.State = TileState.Moveable;
+            tile.state = TileState.Moveable;
         }
     }
 }

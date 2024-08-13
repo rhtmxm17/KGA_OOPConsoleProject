@@ -52,7 +52,7 @@
                 case SceneType.Select:
                     return new SelectScene(game);
                 case SceneType.Stage:
-                    throw new NotImplementedException($"TODO: 스테이지 씬 생성, arg == {arg}");
+                    return new StageScene(game);
                 default:
                     throw new ArgumentException("잘못된 SceneType");
             }

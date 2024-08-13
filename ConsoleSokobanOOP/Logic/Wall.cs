@@ -7,14 +7,14 @@ namespace ConsoleSokobanOOP
         public override void RemoveFrom(Tile tile)
         {
             Debug.Assert(false, "제거가 고려되지 않은 속성이 제거됨");
-            tile.State = TileState.Empty;
+            tile.state = TileState.Empty;
             tile.OnEntry -= IncorrectEntry;
         }
 
         public override void SetAttribute(Tile tile)
         {
             tile.RenderString = "▦";
-            tile.State = TileState.Blocked;
+            tile.state = TileState.Blocked;
             tile.OnEntry += IncorrectEntry;
         }
 
