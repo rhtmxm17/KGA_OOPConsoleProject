@@ -15,7 +15,7 @@
             Console.WriteLine();
             Console.WriteLine("아무 키나 눌러서 시작");
 
-            onKeyInput += key =>
+            OnKeyInput += key =>
             {
                 ChangeScene(SceneFactory(SceneType.Setting));
             };

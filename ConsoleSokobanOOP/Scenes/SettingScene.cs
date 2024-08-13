@@ -12,7 +12,7 @@
             Console.WriteLine("[▦ ● ○]");
             Console.WriteLine("위 괄호 안의 문자가 물음표로 변환되지 않고 모두 정상적으로 출력됩니까?(Y/N)");
             Console.WriteLine();
-            onKeyInput += this.KeyCheck;
+            OnKeyInput += this.KeyCheck;
         }
 
         public override void Exit() { }

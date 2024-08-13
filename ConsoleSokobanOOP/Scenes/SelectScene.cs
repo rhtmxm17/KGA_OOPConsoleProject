@@ -5,7 +5,7 @@ namespace ConsoleSokobanOOP
     public class SelectScene : Scene
     {
         private const int CursorBegin = 2;
-        private const int CursorEnd = CursorBegin + 4;
+        private const int CursorEnd = CursorBegin + Constant.Stages + 1;
         private int selected = CursorBegin;
 
         private bool animationToggle = false;
@@ -20,19 +20,24 @@ namespace ConsoleSokobanOOP
             Console.Clear();
             Console.WriteLine("스테이지 선택:");
             Console.WriteLine();
-            Console.WriteLine("  |스테이지 1");
-            Console.WriteLine("  |스테이지 2");
-            Console.WriteLine("  |스테이지 3");
+            for (int i = 1; i <= Constant.Stages; i++)
+            {
+                Console.WriteLine($"  |스테이지 {i}");
+            }
             Console.WriteLine();
             Console.WriteLine("  |종료");
             Console.WriteLine();
             Console.WriteLine("방향키: 선택      엔터: 확인");
 
-            onKeyInput += this.KeyCheck;
+            OnKeyInput += this.KeyCheck;
             stopwatch.Start();
         }
 
-        public override void Exit() { }
+        public override void Exit() 
+        {
+            OnKeyInput -= this.KeyCheck;
+            stopwatch.Stop();
+        }
 
         public override void Render()
         {

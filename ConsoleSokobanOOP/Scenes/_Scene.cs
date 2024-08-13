@@ -10,11 +10,11 @@
             {
                 inputKey = value;
                 if (InputKey != ConsoleKey.None)
-                    onKeyInput?.Invoke(inputKey);
+                    OnKeyInput?.Invoke(inputKey);
             }
         }
 
-        public event Action<ConsoleKey> onKeyInput;
+        public event Action<ConsoleKey> OnKeyInput;
 
         private Game game;
 
@@ -53,6 +53,8 @@
 
         public Scene SceneFactory(SceneType type, int arg = 0) => SceneFactory(game, type, arg);
 
+
+        private static Scene s_selectScene;
         public static Scene SceneFactory(Game game, SceneType type, int arg = 0)
         {
             switch (type)
@@ -62,9 +64,11 @@
                 case SceneType.Setting:
                     return new SettingScene(game);
                 case SceneType.Select:
-                    return new SelectScene(game);
+                    if(s_selectScene is null)
+                        s_selectScene = new SelectScene(game);
+                    return s_selectScene;
                 case SceneType.Stage:
-                    return new StageScene(game);
+                    return new StageScene(game, DataContainer.GetStageData(0));
                 default:
                     throw new ArgumentException("잘못된 SceneType");
             }

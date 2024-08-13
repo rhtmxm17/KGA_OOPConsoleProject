@@ -1,28 +1,75 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ConsoleSokobanOOP
 {
+    public struct StageSetup
+    {
+        public int sizeX;
+        public int sizeY;
+        public Point player;
+        public Point[] balls;
+        public Point[] wall;
+        public Point[] goal;
+    }
+
     internal class StageScene : Scene
     {
         private Tile[,] map;
         private Goal goal;
         private Player player;
 
-        private string fixedLayer;
-        private List<StageObject> DynamicLayer = new();
+        private string fixedLayer = string.Empty;
+        private List<StageObject> DynamicLayer;
 
-        public StageScene(Game game) : base(game)
+        public StageScene(Game game, in StageSetup data) : base(game)
         {
+            map = new Tile[data.sizeX, data.sizeY];
+            goal = new();
+            player = new();
+            DynamicLayer = new(data.balls.Length + 1);
+            SetupMap(in data);
         }
 
-        public override void Enter()
+        private void SetupMap(in StageSetup data)
         {
-            Console.Clear();
+            // 타일
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    map[i, j] = new Tile();
+                }
+            }
 
-            SampleStageScene();
+            // 플레이어
+            DynamicLayer.Add(player);
+            player.Point = data.player;
+            Map(data.player).Entry(player);
 
+            // 공
+            foreach (var pt in data.balls)
+            {
+                Ball ball = new();
+                DynamicLayer.Add(ball);
+                ball.Point = pt;
+                Map(pt).Entry(ball);
+            }
+
+            // 벽
+            Wall wall = new Wall();
+            foreach (var pt in data.wall)
+            {
+                wall.SetAttribute(Map(pt));
+            }
+
+            // 골
+            foreach (var pt in data.goal)
+            {
+                goal.SetAttribute(Map(pt));
+            }
+
+            // 고정 출력
             StringBuilder sb = new();
             for (int i = 0; i < map.GetLength(0); i++)
             {
@@ -34,23 +81,31 @@ namespace ConsoleSokobanOOP
             }
 
             sb.AppendLine();
+            sb.AppendLine("돌아가기: Esc");
             sb.Append("남은 공: ");
 
             fixedLayer = sb.ToString();
+        }
 
-            onKeyInput += KeyCheck;
+        public override void Enter()
+        {
+            Console.Clear();
+
+            OnKeyInput += KeyCheck;
+            goal.OnScoreChanged += ScoreCheck;
         }
 
         public override void Exit()
         {
-            throw new NotImplementedException();
+            OnKeyInput -= KeyCheck;
+            goal.OnScoreChanged -= ScoreCheck;
         }
 
         public override void Render()
         {
             Console.SetCursorPosition(0, 0);
             Console.Write(fixedLayer);
-            Console.Write(goal.Count);
+            Console.Write(goal.Score);
 
             foreach (var obj in DynamicLayer)
             {
@@ -133,6 +188,22 @@ namespace ConsoleSokobanOOP
             StageObject moved = Map(from).Away() ?? throw new Exception("논리오류: 정상일 경우 not null");
             moved.Point = to;
             Map(to).Entry(moved);
+        }
+
+        private void ScoreCheck()
+        {
+            if (goal.Score > 0)
+                return;
+
+            Render();
+
+            int y = map.GetLength(1) - 2;
+            if (y < 0)
+                y = 0;
+            Console.SetCursorPosition(y, map.GetLength(0) >> 1);
+            Console.Write("클리어!");
+            Thread.Sleep(2000);
+            ChangeScene(SceneFactory(SceneType.Select));
         }
 
         private void SampleStageScene()
