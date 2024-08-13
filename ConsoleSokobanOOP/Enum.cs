@@ -2,4 +2,5 @@
 {
     public enum SceneType { Title, Setting, Select, Stage };
     public enum TileState { Blocked, Moveable, Empty };
+    public enum RenderMode { Default, Safe };
 }

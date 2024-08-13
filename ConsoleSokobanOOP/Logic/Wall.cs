@@ -4,6 +4,13 @@ namespace ConsoleSokobanOOP
 {
     public class Wall : TileAttribute
     {
+        private string renderString;
+
+        public Wall()
+        {
+            renderString = DataContainer.GetRenderString("Wall");
+        }
+
         public override void RemoveFrom(Tile tile)
         {
             Debug.Assert(false, "제거가 고려되지 않은 속성이 제거됨");
@@ -13,7 +20,7 @@ namespace ConsoleSokobanOOP
 
         public override void SetAttribute(Tile tile)
         {
-            tile.RenderString = "▦";
+            tile.RenderString = renderString;
             tile.state = TileState.Blocked;
             tile.OnEntry += IncorrectEntry;
         }

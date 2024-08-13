@@ -2,7 +2,19 @@
 {
     public abstract class Scene
     {
-        public ConsoleKey InputKey { get; private set; }
+        private ConsoleKey inputKey;
+        public ConsoleKey InputKey
+        {
+            get => inputKey;
+            private set
+            {
+                inputKey = value;
+                if (InputKey != ConsoleKey.None)
+                    onKeyInput?.Invoke(inputKey);
+            }
+        }
+
+        public event Action<ConsoleKey> onKeyInput;
 
         private Game game;
 
@@ -48,7 +60,7 @@
                 case SceneType.Title:
                     return new TitleScene(game);
                 case SceneType.Setting:
-                    throw new NotImplementedException("TODO: 셋팅 씬 생성");
+                    return new SettingScene(game);
                 case SceneType.Select:
                     return new SelectScene(game);
                 case SceneType.Stage:

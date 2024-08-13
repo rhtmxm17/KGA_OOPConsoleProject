@@ -10,8 +10,6 @@ namespace ConsoleSokobanOOP
 
         private string fixedLayer;
         private List<StageObject> DynamicLayer = new();
-        private int scoreCursorLeft;
-        private int scoreCursorRight;
 
         public StageScene(Game game) : base(game)
         {
@@ -19,6 +17,8 @@ namespace ConsoleSokobanOOP
 
         public override void Enter()
         {
+            Console.Clear();
+
             SampleStageScene();
 
             StringBuilder sb = new();
@@ -30,6 +30,10 @@ namespace ConsoleSokobanOOP
                 }
                 sb.AppendLine();
             }
+
+            sb.AppendLine();
+            sb.Append("남은 공: ");
+
             fixedLayer = sb.ToString();
         }
 
@@ -42,6 +46,7 @@ namespace ConsoleSokobanOOP
         {
             Console.SetCursorPosition(0, 0);
             Console.Write(fixedLayer);
+            Console.Write(goal.Count);
 
             foreach (var obj in DynamicLayer)
             {
@@ -90,10 +95,10 @@ namespace ConsoleSokobanOOP
                 }
             }
 
-            TileAttribute goal = goal = new Goal();
+            goal = new Goal();
             TileAttribute wall = new Wall();
 
-            for(int i = 1; i < 7; i++)
+            for (int i = 1; i < 7; i++)
             {
                 wall.SetAttribute(map[1, i]);
                 wall.SetAttribute(map[6, i]);

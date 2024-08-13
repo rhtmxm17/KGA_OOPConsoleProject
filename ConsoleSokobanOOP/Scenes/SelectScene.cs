@@ -1,10 +1,15 @@
-﻿namespace ConsoleSokobanOOP
+﻿using System.Diagnostics;
+
+namespace ConsoleSokobanOOP
 {
     public class SelectScene : Scene
     {
         private const int CursorBegin = 2;
         private const int CursorEnd = CursorBegin + 4;
         private int selected = CursorBegin;
+
+        private bool animationToggle = false;
+        private Stopwatch stopwatch = new();
 
         public SelectScene(Game game) : base(game)
         {
@@ -22,6 +27,9 @@
             Console.WriteLine("  |종료");
             Console.WriteLine();
             Console.WriteLine("방향키: 선택      엔터: 확인");
+
+            onKeyInput += this.KeyCheck;
+            stopwatch.Start();
         }
 
         public override void Exit() { }
@@ -33,14 +41,24 @@
             {
                 Console.WriteLine("  ");
             }
-
+            
             Console.SetCursorPosition(0, selected);
+            if (animationToggle)
+            {
+                Console.Write(" ");
+            }
             Console.Write(">");
         }
 
         public override void Update()
         {
-            switch(InputKey)
+            // 약 0.5초마다 변경
+            animationToggle = (stopwatch.ElapsedMilliseconds >> 9) % 2 == 0;
+        }
+
+        private void KeyCheck(ConsoleKey key)
+        {
+            switch (InputKey)
             {
                 case ConsoleKey.W:
                 case ConsoleKey.UpArrow:

@@ -5,6 +5,12 @@ namespace ConsoleSokobanOOP
     public class Goal : TileAttribute
     {
         public int Count { get; set; } = 0;
+        private string renderString;
+
+        public Goal()
+        {
+            renderString = DataContainer.GetRenderString("Goal");
+        }
 
         public override void RemoveFrom(Tile tile)
         {
@@ -14,7 +20,7 @@ namespace ConsoleSokobanOOP
 
         public override void SetAttribute(Tile tile)
         {
-            tile.RenderString = "○";
+            tile.RenderString = renderString;
             Count++;
             tile.OnEntry += obj =>
             {

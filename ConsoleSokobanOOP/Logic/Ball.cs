@@ -4,7 +4,9 @@
     {
         public bool IsOnGole { get; set; } = false;
 
-        public override string RenderString => "●";
+        private string renderString;
+
+        public override string RenderString => renderString;
 
         public override ConsoleColor Color
         {
@@ -15,6 +17,11 @@
                 else
                     return ConsoleColor.Blue;
             }
+        }
+
+        public Ball()
+        {
+            renderString = DataContainer.GetRenderString("Ball");
         }
 
         public override void AwayFrom(Tile tile)
