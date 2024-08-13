@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ConsoleSokobanOOP
 {
@@ -35,6 +37,8 @@ namespace ConsoleSokobanOOP
             sb.Append("남은 공: ");
 
             fixedLayer = sb.ToString();
+
+            onKeyInput += KeyCheck;
         }
 
         public override void Exit()
@@ -50,7 +54,7 @@ namespace ConsoleSokobanOOP
 
             foreach (var obj in DynamicLayer)
             {
-                Console.SetCursorPosition(obj.Y * 2, obj.X);
+                Console.SetCursorPosition(obj.Point.y * 2, obj.Point.x);
                 Console.ForegroundColor = obj.Color;
                 Console.Write(obj.RenderString);
             }
@@ -60,28 +64,75 @@ namespace ConsoleSokobanOOP
 
         public override void Update()
         {
-            switch (InputKey)
+        }
+
+        private Tile Map(Point pt) => map[pt.x, pt.y];
+
+        private void KeyCheck(ConsoleKey key)
+        {
+            Direction inputDirection = Direction.NONE;
+            switch (key)
             {
                 case ConsoleKey.W:
                 case ConsoleKey.UpArrow:
-                    player.X--;
+                    inputDirection = Direction.Up;
                     break;
-
-                case ConsoleKey.A:
-                case ConsoleKey.LeftArrow:
-                    player.Y--;
-                    break;
-
                 case ConsoleKey.S:
                 case ConsoleKey.DownArrow:
-                    player.X++;
+                    inputDirection = Direction.Down;
                     break;
-
+                case ConsoleKey.A:
+                case ConsoleKey.LeftArrow:
+                    inputDirection = Direction.Left;
+                    break;
                 case ConsoleKey.D:
                 case ConsoleKey.RightArrow:
-                    player.Y++;
+                    inputDirection = Direction.Right;
                     break;
+                // 스테이지 선택: Esc
+                case ConsoleKey.Escape:
+                    ChangeScene(SceneFactory(SceneType.Select));
+                    return;
+                default:
+                    return;
             }
+
+            // 방향 입력이 있었을 경우 이동 함수 수행
+            if (inputDirection == Direction.NONE)
+                Debug.Assert(false);
+
+            Point next = inputDirection.Next(player.Point);
+            switch (Map(next).state)
+            {
+                case TileState.Blocked:
+                    return;
+
+                case TileState.Moveable:
+                    {
+                        Point pushTo = inputDirection.Next(next);
+                        if (Map(pushTo).state == TileState.Blocked)
+                            return;
+
+                        MoveStageObject(next, pushTo);
+                        MoveStageObject(player.Point, next);
+                    }
+                    return;
+
+                case TileState.Empty:
+                    MoveStageObject(player.Point, next);
+                    return;
+
+                default:
+                    throw new ArgumentException();
+            }
+        }
+
+        // 완전히 조건 확인 후 실제 이동에 사용
+        private void MoveStageObject(Point from, Point to)
+        {
+            StageObject moved = Map(from).Away() ?? throw new Exception("논리오류: 정상일 경우 not null");
+            moved.Point = to;
+            Map(to).Entry(moved);
         }
 
         private void SampleStageScene()
@@ -115,23 +166,21 @@ namespace ConsoleSokobanOOP
 
             player = new Player();
             DynamicLayer.Add(player);
-            map[3, 4].Entry(player);
-            player.X = 3;
-            player.Y = 4;
+            player.Point = new Point { x = 3, y = 4 };
+            map[player.Point.x, player.Point.y].Entry(player);
+
 
             Ball ball;
 
             ball = new Ball();
             DynamicLayer.Add(ball);
-            map[4, 3].Entry(ball);
-            ball.X = 4;
-            ball.Y = 3;
+            ball.Point = new Point { x = 4, y = 3 };
+            map[ball.Point.x, ball.Point.y].Entry(ball);
 
             ball = new Ball();
             DynamicLayer.Add(ball);
-            map[3, 2].Entry(ball);
-            ball.X = 3;
-            ball.Y = 2;
+            ball.Point = new Point { x = 3, y = 2 };
+            map[ball.Point.x, ball.Point.y].Entry(ball);
         }
 
     }

@@ -10,24 +10,28 @@
         public event Action<StageObject>? OnEntry;
         public event Action<StageObject>? OnAway;
 
-        private StageObject? fluidObj = null;
+        public StageObject? FluidObj { get; private set; } = null;
 
         public Tile() { }
 
         public void Entry(StageObject obj)
         {
             OnEntry?.Invoke(obj);
-            fluidObj = obj;
+            FluidObj = obj;
+            obj.EntryTo(this);
         }
 
-        public void Away()
+        public StageObject? Away()
         {
-            if (fluidObj is null)
-                return;
+            if (FluidObj is null)
+                return null;
 
-            OnAway?.Invoke(fluidObj);
+            OnAway?.Invoke(FluidObj);
 
-            fluidObj = null;
+            StageObject away = FluidObj;
+            FluidObj = null;
+            away.AwayFrom(this);
+            return away;
         }
     }
 }
