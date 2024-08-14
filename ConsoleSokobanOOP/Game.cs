@@ -4,7 +4,7 @@ namespace ConsoleSokobanOOP
 {
     public class Game
     {
-        private bool isRunning = false;
+        public bool IsRunning { get; set; } = false;
 
         public int FrameMilliSec { get; set; } = 100;
         public Scene currentScene { get; private set; }
@@ -19,7 +19,7 @@ namespace ConsoleSokobanOOP
             Start();
             Stopwatch stopwatch = new Stopwatch();
 
-            while (isRunning)
+            while (IsRunning)
             {
                 stopwatch.Restart();
 
@@ -34,7 +34,7 @@ namespace ConsoleSokobanOOP
 
         public void Start()
         {
-            isRunning = true;
+            IsRunning = true;
             currentScene.Enter();
             Console.CursorVisible = false;
         }

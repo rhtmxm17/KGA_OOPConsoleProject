@@ -16,11 +16,11 @@
 
         public event Action<ConsoleKey> OnKeyInput;
 
-        private Game game;
+        public Game Game { get; private set; }
 
         public Scene(Game game)
         {
-            this.game = game;
+            this.Game = game;
         }
 
 
@@ -49,9 +49,9 @@
 
         public abstract void Exit();
 
-        protected void ChangeScene(Scene scene) => game.ChangeScene(scene);
+        protected void ChangeScene(Scene scene) => Game.ChangeScene(scene);
 
-        public Scene SceneFactory(SceneType type, int arg = 0) => SceneFactory(game, type, arg);
+        public Scene SceneFactory(SceneType type, int arg = 0) => SceneFactory(Game, type, arg);
 
 
         private static Scene s_selectScene;

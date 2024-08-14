@@ -93,7 +93,8 @@ namespace ConsoleSokobanOOP
 
             if (selected == CursorEnd)
             {
-                throw new NotImplementedException("게임 종료 요청됨");
+                Game.IsRunning = false;
+                return;
             }
 
             ChangeScene(SceneFactory(SceneType.Stage, selected - CursorBegin));

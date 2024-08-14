@@ -24,7 +24,7 @@
         public const int Stages = 3;
     }
 
-    public static class Extention
+    public static partial class Extention
     {
         public static Point Next(this Direction dir, Point pt)
         {
