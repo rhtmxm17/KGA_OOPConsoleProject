@@ -2,7 +2,7 @@
 {
     public static class Constant
     {
-        public const int Stages = 3;
+        public const int Stages = 4;
     }
 
     public struct Point

@@ -20,7 +20,6 @@ namespace ConsoleSokobanOOP
         private class MapData : IConsoleRenader
         {
             #region IConsoleRenader
-            // 출력 기준점(Left Top)
             public Point Point { get; set; } = new Point() { x = 0, y = 0 };
             public string RenderString { get; private set; } = "주의: 맵 출력이 준비되지 않음";
             public void Render()
@@ -49,7 +48,6 @@ namespace ConsoleSokobanOOP
                     }
                 }
             }
-
 
             public void UpdateRenderString()
             {
@@ -84,15 +82,6 @@ namespace ConsoleSokobanOOP
             SetupMap(in data);
         }
 
-        private void TestCode_WarpSetup()
-        {
-            Warp warp = new();
-
-            warp.SetAttribute(map[(3, 3)]);
-            warp.Exit.SetAttribute(map[(1, 5)]);
-
-        }
-
         private void SetupMap(in StageSetup data)
         {
             // 벽
@@ -106,6 +95,15 @@ namespace ConsoleSokobanOOP
             foreach (var pt in data.goal)
             {
                 goal.SetAttribute(map[pt]);
+            }
+
+            // 워프
+            for (int i  = 0; i < data.warpIn.Length; i++)
+            {
+                Warp warp = new();
+
+                warp.SetAttribute(map[data.warpIn[i]]);
+                warp.Exit.SetAttribute(map[data.warpOut[i]]);
             }
 
             // 플레이어
@@ -132,7 +130,6 @@ namespace ConsoleSokobanOOP
 
             textUI = sb.ToString();
 
-            TestCode_WarpSetup();
         }
 
         public override void Enter()
