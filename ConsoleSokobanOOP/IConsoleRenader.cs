@@ -9,7 +9,7 @@
         public virtual ConsoleColor Color => ConsoleColor.White;
 
         // 어째서인지 인터페이스를 구현중인 클래스 타입 변수로 사용하려면 형변환 필요...
-        public void Render()
+        public virtual void Render()
         {
             Console.SetCursorPosition(Point.y * 2, Point.x);
             Console.ForegroundColor = Color;

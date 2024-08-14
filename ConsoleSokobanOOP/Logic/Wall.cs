@@ -23,6 +23,7 @@ namespace ConsoleSokobanOOP
             tile.RenderString = renderString;
             tile.state = TileState.Blocked;
             tile.OnEntry += IncorrectEntry;
+            tile.Color = ConsoleColor.Yellow;
         }
 
         private void IncorrectEntry(StageObject obj)

@@ -26,11 +26,13 @@
 
         public override void AwayFrom(Tile tile)
         {
+            base.EntryTo(tile);
             tile.state = TileState.Empty;
         }
 
         public override void EntryTo(Tile tile)
         {
+            base.EntryTo(tile);
             tile.state = TileState.Moveable;
         }
     }

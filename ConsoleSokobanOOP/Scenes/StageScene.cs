@@ -16,10 +16,20 @@ namespace ConsoleSokobanOOP
 
     internal class StageScene : Scene
     {
-        class MapData : IConsoleRenader
+        private class MapData : IConsoleRenader
         {
+            #region IConsoleRenader
             // 출력 기준점(Left Top)
             public Point Point { get; set; } = new Point() { x = 0, y = 0 };
+            public string RenderString { get; private set; } = "주의: 맵 출력이 준비되지 않음";
+            public void Render()
+            {
+                foreach (Tile tile in map)
+                {
+                    tile.Render();
+                }
+            }
+            #endregion IConsoleRenader
 
             public int SizeX => map.GetLength(0);
             public int SizeY => map.GetLength(1);
@@ -34,12 +44,11 @@ namespace ConsoleSokobanOOP
                 {
                     for (int j = 0; j < sizeY; j++)
                     {
-                        map[i, j] = new Tile();
+                        map[i, j] = new Tile(new Point() { x = i, y = j });
                     }
                 }
             }
 
-            public string RenderString { get; private set; } = "주의: 맵 출력이 준비되지 않음";
 
             public void UpdateRenderString()
             {
@@ -60,16 +69,27 @@ namespace ConsoleSokobanOOP
         private Goal goal;
         private Player player;
 
-        private string fixedLayer = string.Empty;
-        private List<StageObject> DynamicLayer;
+        private string textUI = string.Empty;
+        private List<IConsoleRenader> BackGroundLayer;
+        private List<IConsoleRenader> DynamicLayer;
 
         public StageScene(Game game, in StageSetup data) : base(game)
         {
             map = new MapData(data.sizeX, data.sizeY);
             goal = new();
             player = new();
+            BackGroundLayer = new();
             DynamicLayer = new(data.balls.Length + 1);
             SetupMap(in data);
+        }
+
+        private void TestCode_WarpSetup()
+        {
+            Warp warp = new();
+
+            warp.SetAttribute(map[(3, 3)]);
+            warp.Exit.SetAttribute(map[(1, 5)]);
+
         }
 
         private void SetupMap(in StageSetup data)
@@ -89,7 +109,6 @@ namespace ConsoleSokobanOOP
 
             // 플레이어
             DynamicLayer.Add(player);
-            player.Point = data.player;
             map[data.player].Entry(player);
 
             // 공
@@ -103,13 +122,16 @@ namespace ConsoleSokobanOOP
 
             // 고정 출력
             map.UpdateRenderString();
+            BackGroundLayer.Add(map);
 
             StringBuilder sb = new();
             
             sb.AppendLine("돌아가기: Esc");
             sb.Append("남은 공: ");
 
-            fixedLayer = sb.ToString();
+            textUI = sb.ToString();
+
+            TestCode_WarpSetup();
         }
 
         public override void Enter()
@@ -128,9 +150,14 @@ namespace ConsoleSokobanOOP
 
         public override void Render()
         {
-            map.Render();
+            foreach (var obj in BackGroundLayer)
+            {
+                obj.Render();
+            }
 
-            Console.Write(fixedLayer);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(0, map.SizeX + 1);
+            Console.Write(textUI);
             Console.Write(goal.Score);
 
             foreach (var obj in DynamicLayer)
@@ -187,7 +214,7 @@ namespace ConsoleSokobanOOP
                 case TileState.Moveable:
                     {
                         Point pushTo = inputDirection.Next(next);
-                        if (map[pushTo].state == TileState.Blocked)
+                        if (map[pushTo].state != TileState.Empty)
                             return;
 
                         MoveStageObject(next, pushTo);
@@ -208,7 +235,6 @@ namespace ConsoleSokobanOOP
         private void MoveStageObject(Point from, Point to)
         {
             StageObject moved = map[from].Away() ?? throw new Exception("논리오류: 정상일 경우 not null");
-            moved.Point = to;
             map[to].Entry(moved);
         }
 
@@ -228,4 +254,5 @@ namespace ConsoleSokobanOOP
             ChangeScene(SceneFactory(SceneType.Select));
         }
     }
+
 }

@@ -1,8 +1,12 @@
 ﻿namespace ConsoleSokobanOOP
 {
-    public class Tile
+    public class Tile : IConsoleRenader
     {
+        #region IConsoleRender
         public string RenderString { get; set; } = "  ";
+        public Point Point { get; private set; }
+        public ConsoleColor Color { get; set; } = ConsoleColor.White;
+        #endregion IConsoleRenader
 
         public TileState state = TileState.Empty;
 
@@ -10,27 +14,30 @@
         public event Action<StageObject>? OnEntry;
         public event Action<StageObject>? OnAway;
 
-        public StageObject? FluidObj { get; private set; } = null;
+        public StageObject? Holding { get; private set; } = null;
 
-        public Tile() { }
+        public Tile(Point point)
+        {
+            Point = point;
+        }
 
         public void Entry(StageObject obj)
         {
-            OnEntry?.Invoke(obj);
-            FluidObj = obj;
+            Holding = obj;
             obj.EntryTo(this);
+            OnEntry?.Invoke(obj);
         }
 
         public StageObject? Away()
         {
-            if (FluidObj is null)
+            if (Holding is null)
                 return null;
 
-            OnAway?.Invoke(FluidObj);
-
-            StageObject away = FluidObj;
-            FluidObj = null;
+            StageObject away = Holding;
+            Holding = null;
             away.AwayFrom(this);
+            OnAway?.Invoke(away);
+
             return away;
         }
     }

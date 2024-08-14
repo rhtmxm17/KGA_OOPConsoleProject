@@ -2,11 +2,15 @@
 {
     public abstract class StageObject : IConsoleRenader
     {
-        public Point Point { get; set; }
+        public virtual Point Point { get; set; }
         public abstract string RenderString { get; }
         public virtual ConsoleColor Color => ConsoleColor.White;
 
-        public abstract void EntryTo(Tile tile);
-        public abstract void AwayFrom(Tile tile);
+        public virtual void EntryTo(Tile tile)
+        {
+            this.Point = tile.Point;
+        }
+
+        public virtual void AwayFrom(Tile tile) { }
     }
 }

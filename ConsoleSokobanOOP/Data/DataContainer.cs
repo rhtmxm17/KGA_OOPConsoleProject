@@ -24,7 +24,7 @@ namespace ConsoleSokobanOOP
                         var symbols = stream.ReadLine()?.Split(',') ?? Array.Empty<string>();
                         for (cell = 0; cell < symbols.Length; cell++)
                         {
-                            switch(symbols[cell])
+                            switch (symbols[cell])
                             {
                                 case "W":
                                     wallTemp.Add(new Point { x = line, y = cell });
@@ -65,6 +65,8 @@ namespace ConsoleSokobanOOP
                 strings.Add("Ball", "●");
                 strings.Add("Player", "ⓟ");
                 strings.Add("Goal", "○");
+                strings.Add("WarpIn", "●");
+                strings.Add("WarpOut", "●");
 
             }
             else if (mode == RenderMode.Safe)
@@ -73,6 +75,8 @@ namespace ConsoleSokobanOOP
                 strings.Add("Ball", "ㅇ");
                 strings.Add("Player", "ⓟ");
                 strings.Add("Goal", "ㅁ");
+                strings.Add("WarpIn", "＠");
+                strings.Add("WarpOut", "＠");
 
             }
             else
