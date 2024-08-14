@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConsoleSokobanOOP
 {
@@ -12,6 +11,8 @@ namespace ConsoleSokobanOOP
         public Point[] balls;
         public Point[] wall;
         public Point[] goal;
+        public Point[] warpIn;
+        public Point[] warpOut;
     }
 
     internal class StageScene : Scene
@@ -36,7 +37,7 @@ namespace ConsoleSokobanOOP
 
             private Tile[,] map;
             public Tile this[Point pt] => map[pt.x, pt.y];
-            
+
             public MapData(int sizeX, int sizeY)
             {
                 map = new Tile[sizeX, sizeY];
@@ -125,7 +126,7 @@ namespace ConsoleSokobanOOP
             BackGroundLayer.Add(map);
 
             StringBuilder sb = new();
-            
+
             sb.AppendLine("돌아가기: Esc");
             sb.Append("남은 공: ");
 

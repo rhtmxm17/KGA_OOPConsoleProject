@@ -6,56 +6,7 @@ namespace ConsoleSokobanOOP
     {
         private static Dictionary<string, string> strings = new();
         private static StageSetup[] stageData = new StageSetup[Constant.Stages];
-
-        static DataContainer()
-        {
-            for (int stage = 0; stage < Constant.Stages; stage++)
-            {
-                using (StreamReader stream = new StreamReader($"../../../Data/stage{stage + 1}.CSV"))
-                {
-                    List<Point> ballTemp = new();
-                    List<Point> wallTemp = new();
-                    List<Point> goalTemp = new();
-
-                    int line = 0;
-                    int cell = 0;
-                    for (line = 0; false == stream.EndOfStream; line++)
-                    {
-                        var symbols = stream.ReadLine()?.Split(',') ?? Array.Empty<string>();
-                        for (cell = 0; cell < symbols.Length; cell++)
-                        {
-                            switch (symbols[cell])
-                            {
-                                case "W":
-                                    wallTemp.Add(new Point { x = line, y = cell });
-                                    break;
-                                case "G":
-                                    goalTemp.Add(new Point { x = line, y = cell });
-                                    break;
-                                case "B":
-                                    ballTemp.Add(new Point { x = line, y = cell });
-                                    break;
-                                case "GB":
-                                    goalTemp.Add(new Point { x = line, y = cell });
-                                    ballTemp.Add(new Point { x = line, y = cell });
-                                    break;
-                                case "P":
-                                    stageData[stage].player = new Point { x = line, y = cell };
-                                    break;
-                            }
-                        }
-                    }
-
-                    stageData[stage].sizeX = line;
-                    stageData[stage].sizeY = cell;
-                    stageData[stage].balls = ballTemp.ToArray();
-                    stageData[stage].wall = wallTemp.ToArray();
-                    stageData[stage].goal = goalTemp.ToArray();
-                }
-            }
-
-            return;
-        }
+        private static bool[] isDataLoaded = new bool[Constant.Stages];
 
         public static void Setup(RenderMode mode)
         {
@@ -90,6 +41,75 @@ namespace ConsoleSokobanOOP
             return value!;
         }
 
-        public static ref readonly StageSetup GetStageData(int arg) => ref stageData[arg];
+        public static ref readonly StageSetup GetStageData(int stage)
+        {
+            if (isDataLoaded[stage] == false)
+            {
+                stageData[stage] = new StageSetup();
+
+                using (StreamReader stream = new StreamReader($"../../../Data/stage{stage + 1}.CSV"))
+                {
+                    List<Point> ballTemp = new();
+                    List<Point> wallTemp = new();
+                    List<Point> goalTemp = new();
+                    List<(char key, Point pt)> warpInTemp = new();
+                    List<(char key, Point pt)> warpOutTemp = new();
+
+                    int line = 0;
+                    int cell = 0;
+                    for (line = 0; false == stream.EndOfStream; line++)
+                    {
+                        var symbols = stream.ReadLine()?.Split(',') ?? Array.Empty<string>();
+                        for (cell = 0; cell < symbols.Length; cell++)
+                        {
+                            for (int i = 0; i < symbols[cell].Length; i++)
+                            {
+                                switch (symbols[cell][i])
+                                {
+                                    case 'P': // player
+                                        stageData[stage].player = (line, cell);
+                                        break;
+                                    case 'B': // ball
+                                        ballTemp.Add((line, cell));
+                                        break;
+                                    case 'W': // wall
+                                        wallTemp.Add((line, cell));
+                                        break;
+                                    case 'G': // goal
+                                        goalTemp.Add((line, cell));
+                                        break;
+                                    case 'I': // warp 입구, 반드시 I1, Ia 와 같이 동일한 한글자 키값 사용
+                                        i++;
+                                        warpInTemp.Add((symbols[cell][i], (line, cell)));
+                                        break;
+                                    case 'O': // warp 출구, 반드시 입구와 짝을 이루고 키값 사용할것
+                                        i++;
+                                        warpOutTemp.Add((symbols[cell][i], (line, cell)));
+                                        break;
+                                }
+                            }
+                        }
+                    }
+
+                    stageData[stage].sizeX = line;
+                    stageData[stage].sizeY = cell;
+                    stageData[stage].balls = ballTemp.ToArray();
+                    stageData[stage].wall = wallTemp.ToArray();
+                    stageData[stage].goal = goalTemp.ToArray();
+
+                    stageData[stage].warpIn = new Point[warpInTemp.Count];
+                    stageData[stage].warpOut = new Point[warpOutTemp.Count];
+                    for (int i = 0; i < warpInTemp.Count; i++)
+                    {
+                        stageData[stage].warpIn[i] = warpInTemp[i].pt;
+                        stageData[stage].warpOut[i] = warpOutTemp.Find(pair => pair.key == warpInTemp[i].key).pt;
+                    }
+                }
+
+                isDataLoaded[stage] = true;
+            }
+
+            return ref stageData[stage];
+        }
     }
 }
