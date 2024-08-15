@@ -1,4 +1,7 @@
-﻿namespace ConsoleSokobanOOP
+﻿using System.Collections;
+using System.Drawing;
+
+namespace ConsoleSokobanOOP
 {
     public interface IConsoleRenader
     {
@@ -8,18 +11,38 @@
 
         public virtual ConsoleColor Color => ConsoleColor.White;
 
-        // 어째서인지 인터페이스를 구현중인 클래스 타입 변수로 사용하려면 형변환 필요...
-        public virtual void Render()
-        {
-            Console.SetCursorPosition(Point.y * 2, Point.x);
-            Console.ForegroundColor = Color;
-            Console.Write(RenderString);
-        }
+        public virtual IEnumerable<IConsoleRenader>? Childs => null;
+
     }
 
     public static partial class Extention
     {
-        // 확장시키니 또 되네?
-        public static void Render(this IConsoleRenader obj) => obj.Render();
+        public static void Render(this IConsoleRenader obj)
+        {
+            Console.SetCursorPosition(obj.Point.y * 2, obj.Point.x);
+            Console.ForegroundColor = obj.Color;
+            Console.Write(obj.RenderString);
+            if (obj.Childs is not null)
+            {
+                foreach (var child in obj.Childs)
+                {
+                    RenderChild(obj.Point, child);
+                }
+            }
+        }
+
+
+        private static void RenderChild(Point basePoint, IConsoleRenader obj)
+        {
+            Point renderPoint = (basePoint.x + obj.Point.x, basePoint.y + obj.Point.y);
+            Console.SetCursorPosition(renderPoint.y * 2, renderPoint.x);
+            Console.ForegroundColor = obj.Color;
+            Console.Write(obj.RenderString);
+            if (obj.Childs is not null)
+            {
+                foreach (var child in obj.Childs)
+                    RenderChild(renderPoint, child);
+            }
+        }
     }
 }

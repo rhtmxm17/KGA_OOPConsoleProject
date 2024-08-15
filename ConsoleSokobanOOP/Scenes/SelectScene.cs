@@ -33,7 +33,7 @@ namespace ConsoleSokobanOOP
             stopwatch.Start();
         }
 
-        public override void Exit() 
+        public override void Exit()
         {
             OnKeyInput -= this.KeyCheck;
             stopwatch.Stop();
@@ -46,7 +46,7 @@ namespace ConsoleSokobanOOP
             {
                 Console.WriteLine("  ");
             }
-            
+
             Console.SetCursorPosition(0, selected);
             if (animationToggle)
             {

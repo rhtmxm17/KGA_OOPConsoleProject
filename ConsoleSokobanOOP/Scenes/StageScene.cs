@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace ConsoleSokobanOOP
@@ -22,11 +23,14 @@ namespace ConsoleSokobanOOP
             #region IConsoleRenader
             public Point Point { get; set; } = new Point() { x = 0, y = 0 };
             public string RenderString { get; private set; } = "주의: 맵 출력이 준비되지 않음";
-            public void Render()
+            public IEnumerable<IConsoleRenader>? Childs
             {
-                foreach (Tile tile in map)
+                get
                 {
-                    tile.Render();
+                    foreach (var tile in map)
+                    {
+                        yield return tile;
+                    }
                 }
             }
             #endregion IConsoleRenader
@@ -98,7 +102,7 @@ namespace ConsoleSokobanOOP
             }
 
             // 워프
-            for (int i  = 0; i < data.warpIn.Length; i++)
+            for (int i = 0; i < data.warpIn.Length; i++)
             {
                 Warp warp = new();
 

@@ -10,7 +10,7 @@ namespace ConsoleSokobanOOP
         public int Score
         {
             get => count;
-            set 
+            set
             {
                 count = value;
                 OnScoreChanged?.Invoke();

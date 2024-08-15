@@ -14,7 +14,7 @@
             }
         }
 
-        public event Action<ConsoleKey> OnKeyInput;
+        public event Action<ConsoleKey>? OnKeyInput;
 
         public Game Game { get; private set; }
 
@@ -64,7 +64,7 @@
                 case SceneType.Setting:
                     return new SettingScene(game);
                 case SceneType.Select:
-                    if(s_selectScene is null)
+                    if (s_selectScene is null)
                         s_selectScene = new SelectScene(game);
                     return s_selectScene;
                 case SceneType.Stage:
