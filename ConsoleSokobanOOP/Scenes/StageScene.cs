@@ -22,7 +22,7 @@ namespace ConsoleSokobanOOP
         {
             #region IRenderGroup
 
-            Point IRenderGroup.Anchor { get; set; } = new Point() { x = 3, y = 3 };
+            public Point Anchor { get; set; } = (0, 0);
 
             IEnumerable<IConsoleRender> IRenderGroup.Items
             {
@@ -58,24 +58,28 @@ namespace ConsoleSokobanOOP
         }
 
         private MapData map;
-        private Goal goal;
         private Player player;
+        private Goal goal;
+        private TextUI scoreUI;
 
-        private string textUI = string.Empty;
-        private List<IConsoleRender> BackGroundLayer;
+        private PlaneRenderGroup UILayer;
         private PlaneRenderGroup DynamicLayer;
+
+        private Direction pushDirection = default;
+        private int pushCount = 0;
 
         public StageScene(Game game, in StageSetup data) : base(game)
         {
             map = new MapData(data.sizeX, data.sizeY);
-            goal = new();
             player = new();
-            BackGroundLayer = new();
+            goal = new();
+            scoreUI = new();
+            UILayer = new();
             DynamicLayer = new PlaneRenderGroup(data.balls.Length + 1);
-            SetupMap(in data);
+            Setup(in data);
         }
 
-        private void SetupMap(in StageSetup data)
+        private void Setup(in StageSetup data)
         {
             // 벽
             Wall wall = new Wall();
@@ -112,14 +116,24 @@ namespace ConsoleSokobanOOP
                 map[pt].Entry(ball);
             }
 
-            // 고정 출력
-            StringBuilder sb = new();
+            // UI
+            TextUI ui;
 
-            sb.AppendLine("돌아가기: Esc");
-            sb.Append("남은 공: ");
+            ui = new TextUI();
+            ui.Point = (2, 0);
+            ui.RenderString = "돌아가기: Esc";
+            UILayer.Items.Add(ui);
 
-            textUI = sb.ToString();
+            ui = new TextUI();
+            ui.Point = (0, 0);
+            ui.RenderString = "남은 공:";
+            UILayer.Items.Add(ui);
 
+            scoreUI.Point = (0, 5);
+            scoreUI.RenderString = goal.Score.ToString();
+            UILayer.Items.Add(scoreUI);
+
+            UILayer.Anchor = (map.SizeX + 1, 0);
         }
 
         public override void Enter()
@@ -139,17 +153,7 @@ namespace ConsoleSokobanOOP
         public override void Render()
         {
             map.GroupRender();
-
-            foreach (var obj in BackGroundLayer)
-            {
-                obj.Render();
-            }
-
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.SetCursorPosition(0, map.SizeX + 1);
-            Console.Write(textUI);
-            Console.Write(goal.Score);
-
+            UILayer.GroupRender();
             DynamicLayer.GroupRender();
 
             Console.ResetColor();
@@ -196,6 +200,7 @@ namespace ConsoleSokobanOOP
             switch (map[next].state)
             {
                 case TileState.Blocked:
+                    PushGame(inputDirection);
                     return;
 
                 case TileState.Moveable:
@@ -227,6 +232,8 @@ namespace ConsoleSokobanOOP
 
         private void ScoreCheck()
         {
+            scoreUI.RenderString = goal.Score.ToString();
+
             if (goal.Score > 0)
                 return;
 
@@ -239,6 +246,29 @@ namespace ConsoleSokobanOOP
             Console.Write("클리어!");
             Thread.Sleep(2000);
             ChangeScene(SceneFactory(SceneType.Select));
+        }
+
+        private void PushGame(Direction direction)
+        {
+            if (direction != pushDirection)
+            {
+                pushDirection = direction;
+                pushCount = 0;
+                return;
+            }
+
+            pushCount++;
+            if (pushCount < 5)
+                return;
+
+            Point moveTo = direction.Next(map.Anchor);
+            if (moveTo.x < 0 || moveTo.y < 0)
+                return;
+
+            map.Anchor = moveTo;
+            UILayer.Anchor = direction.Next(UILayer.Anchor);
+            DynamicLayer.Anchor = direction.Next(DynamicLayer.Anchor);
+            Console.Clear();
         }
     }
 
