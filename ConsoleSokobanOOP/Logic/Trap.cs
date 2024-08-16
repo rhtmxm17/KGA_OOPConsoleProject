@@ -25,7 +25,7 @@
             tile.OnEntry += OnTrapped;
         }
 
-        private void OnTrapped(Tile tile,  StageObject obj)
+        private void OnTrapped(Tile tile, StageObject obj)
         {
             if (obj is Player)
             {

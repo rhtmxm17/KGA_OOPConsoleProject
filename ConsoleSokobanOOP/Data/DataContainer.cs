@@ -7,6 +7,12 @@ namespace ConsoleSokobanOOP
         private static Dictionary<string, string> strings = new();
         private static StageSetup[] stageData = new StageSetup[Constant.Stages];
         private static bool[] isDataLoaded = new bool[Constant.Stages];
+        public static bool[] isLocked = new bool[Constant.Stages + 1];
+
+        static DataContainer()
+        {
+            isLocked = [false, true, true, false, false, false];
+        }
 
         public static void Setup(RenderMode mode)
         {
@@ -26,8 +32,8 @@ namespace ConsoleSokobanOOP
                 strings.Add("Ball", "ㅇ");
                 strings.Add("Player", "ⓟ");
                 strings.Add("Goal", "ㅁ");
-                strings.Add("WarpIn", "＠");
-                strings.Add("WarpOut", "＠");
+                strings.Add("WarpIn", "IN");
+                strings.Add("WarpOut", "OU");
 
             }
             else
@@ -46,6 +52,7 @@ namespace ConsoleSokobanOOP
             if (isDataLoaded[stage] == false)
             {
                 stageData[stage] = new StageSetup();
+                stageData[stage].stage = stage;
 
                 using (StreamReader stream = new StreamReader($"../../../Data/stage{stage + 1}.CSV"))
                 {

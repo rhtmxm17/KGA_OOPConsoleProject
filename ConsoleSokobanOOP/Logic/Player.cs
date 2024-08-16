@@ -11,7 +11,7 @@ namespace ConsoleSokobanOOP
         {
             get
             {
-                if(IsGamingColor)
+                if (IsGamingColor)
                 {
                     return (ConsoleColor)(((int)stopwatch.Elapsed.TotalMilliseconds >> 5) % 16);
                 }
@@ -26,7 +26,7 @@ namespace ConsoleSokobanOOP
 
         private bool isGamingColor;
 
-        public bool IsGamingColor 
+        public bool IsGamingColor
         {
             get => isGamingColor;
             set

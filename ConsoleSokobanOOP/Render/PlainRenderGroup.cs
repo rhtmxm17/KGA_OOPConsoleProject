@@ -1,7 +1,7 @@
 ﻿
 namespace ConsoleSokobanOOP
 {
-    public class PlaneRenderGroup : IRenderGroup
+    public class PlainRenderGroup : IRenderGroup
     {
         #region IRenderGroup
 
@@ -12,12 +12,12 @@ namespace ConsoleSokobanOOP
 
         public List<IConsoleRender> Items { get; private set; }
 
-        public PlaneRenderGroup()
+        public PlainRenderGroup()
         {
             Items = new();
         }
 
-        public PlaneRenderGroup(int capacity)
+        public PlainRenderGroup(int capacity)
         {
             Items = new(capacity);
         }

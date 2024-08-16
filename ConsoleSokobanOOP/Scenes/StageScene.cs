@@ -1,11 +1,11 @@
 ﻿using System.Diagnostics;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace ConsoleSokobanOOP
 {
 
     public struct StageSetup
     {
+        public int stage;
         public int sizeX;
         public int sizeY;
         public Point player;
@@ -19,25 +19,28 @@ namespace ConsoleSokobanOOP
 
     public partial class StageScene : Scene
     {
+        private int stage;
+
         private MapData map;
         private Player player;
         private Goal goal;
         private TextUI scoreUI;
 
-        private PlaneRenderGroup UILayer;
-        private PlaneRenderGroup DynamicLayer;
+        private PlainRenderGroup UILayer;
+        private PlainRenderGroup DynamicLayer;
 
         private Direction pushDirection = default;
         private int pushCount = 0;
 
         public StageScene(Game game, in StageSetup data) : base(game)
         {
+            stage = data.stage;
             map = new MapData(data.sizeX, data.sizeY);
             player = new();
             goal = new();
             scoreUI = new();
             UILayer = new();
-            DynamicLayer = new PlaneRenderGroup(data.balls.Length + 1);
+            DynamicLayer = new PlainRenderGroup(data.balls.Length + 1);
             Setup(in data);
         }
 
@@ -117,6 +120,8 @@ namespace ConsoleSokobanOOP
         {
             OnKeyInput -= KeyCheck;
             goal.OnScoreChanged -= ScoreCheck;
+
+            Console.ResetColor();
         }
 
         public override void Render()
@@ -124,8 +129,6 @@ namespace ConsoleSokobanOOP
             map.GroupRender();
             UILayer.GroupRender();
             DynamicLayer.GroupRender();
-
-            Console.ResetColor();
         }
 
         public override void Update()
@@ -235,6 +238,7 @@ namespace ConsoleSokobanOOP
             if (goal.Score > 0)
                 return;
 
+            DataContainer.isLocked[stage + 1] = false;
             GameOver("클리어!!");
         }
 
@@ -261,6 +265,5 @@ namespace ConsoleSokobanOOP
             Console.Clear();
         }
 
-        
     }
 }

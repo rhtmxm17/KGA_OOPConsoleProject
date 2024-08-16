@@ -20,9 +20,14 @@ namespace ConsoleSokobanOOP
             Console.Clear();
             Console.WriteLine("스테이지 선택:");
             Console.WriteLine();
-            for (int i = 1; i <= Constant.Stages; i++)
+            for (int i = 0; i < Constant.Stages; i++)
             {
-                Console.WriteLine($"  |스테이지 {i}");
+                Console.Write($"  |스테이지 {i + 1}");
+                if (DataContainer.isLocked[i])
+                {
+                    Console.Write(" (잠김)");
+                }
+                Console.WriteLine();
             }
             Console.WriteLine();
             Console.WriteLine("  |종료");
@@ -88,14 +93,20 @@ namespace ConsoleSokobanOOP
 
         private void EnterStage()
         {
+            // 빈 칸
             if (selected == CursorEnd - 1)
                 return;
 
+            // 게임 종료
             if (selected == CursorEnd)
             {
                 Game.IsRunning = false;
                 return;
             }
+
+            // 잠겨있는 스테이지
+            if (DataContainer.isLocked[selected - CursorBegin])
+                return;
 
             ChangeScene(SceneFactory(SceneType.Stage, selected - CursorBegin));
         }
