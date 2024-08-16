@@ -52,6 +52,7 @@ namespace ConsoleSokobanOOP
                     List<Point> ballTemp = new();
                     List<Point> wallTemp = new();
                     List<Point> goalTemp = new();
+                    List<Point> trapTemp = new();
                     List<(char key, Point pt)> warpInTemp = new();
                     List<(char key, Point pt)> warpOutTemp = new();
 
@@ -78,6 +79,9 @@ namespace ConsoleSokobanOOP
                                     case 'G': // goal
                                         goalTemp.Add((line, cell));
                                         break;
+                                    case 'T': // trap
+                                        trapTemp.Add((line, cell));
+                                        break;
                                     case 'I': // warp 입구, 반드시 I1, Ia 와 같이 동일한 한글자 키값 사용
                                         i++;
                                         warpInTemp.Add((symbols[cell][i], (line, cell)));
@@ -96,6 +100,7 @@ namespace ConsoleSokobanOOP
                     stageData[stage].balls = ballTemp.ToArray();
                     stageData[stage].wall = wallTemp.ToArray();
                     stageData[stage].goal = goalTemp.ToArray();
+                    stageData[stage].trap = trapTemp.ToArray();
 
                     stageData[stage].warpIn = new Point[warpInTemp.Count];
                     stageData[stage].warpOut = new Point[warpOutTemp.Count];

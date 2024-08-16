@@ -12,6 +12,7 @@ namespace ConsoleSokobanOOP
         public Point[] balls;
         public Point[] wall;
         public Point[] goal;
+        public Point[] trap;
         public Point[] warpIn;
         public Point[] warpOut;
     }
@@ -64,8 +65,12 @@ namespace ConsoleSokobanOOP
                 warp.Exit.SetAttribute(map[data.warpOut[i]]);
             }
 
+            // 함정
             Trap trap = new(this);
-            trap.SetAttribute(map[(5, 1)]);
+            foreach (var pt in data.trap)
+            {
+                trap.SetAttribute(map[pt]);
+            }
 
             // 플레이어
             DynamicLayer.Items.Add(player);

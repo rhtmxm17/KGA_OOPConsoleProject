@@ -30,7 +30,6 @@ namespace ConsoleSokobanOOP
         public TileAttribute Exit { get; private set; }
 
         private string[] renderString = new string[2];
-        private Tile? entrnceTile = null;
         private Tile? exitTile = null;
 
         public Warp()
@@ -49,22 +48,21 @@ namespace ConsoleSokobanOOP
 
         public override void SetAttribute(Tile tile)
         {
-            entrnceTile = tile;
             tile.RenderString = renderString[0];
             tile.OnEntry += TryWarp;
             tile.Color = ConsoleColor.Cyan;
         }
 
-        private void TryWarp(StageObject obj)
+        private void TryWarp(Tile tile, StageObject obj)
         {
-            if (entrnceTile is null || exitTile is null)
-                throw new Exception("정의되지 않은 동작: 출입구가 설정되지 않음");
+            if (exitTile is null)
+                throw new Exception("정의되지 않은 동작: 출구가 설정되지 않음");
 
             // 출구가 막혀있는 경우
             if (exitTile.Holding is not null)
                 return;
 
-            entrnceTile.Away();
+            tile.Away();
             exitTile.Entry(obj);
         }
     }

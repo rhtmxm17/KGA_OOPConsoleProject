@@ -26,7 +26,7 @@ namespace ConsoleSokobanOOP
             tile.Color = ConsoleColor.Yellow;
         }
 
-        private void IncorrectEntry(StageObject obj)
+        private void IncorrectEntry(Tile tile, StageObject obj)
         {
             Debug.Assert(false, "벽에 진입 명령됨");
         }

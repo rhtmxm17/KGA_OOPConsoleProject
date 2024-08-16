@@ -34,7 +34,7 @@ namespace ConsoleSokobanOOP
         {
             tile.RenderString = renderString;
             Score++;
-            tile.OnEntry += obj =>
+            tile.OnEntry += (tile, obj) =>
             {
                 if (obj is Ball ball)
                 {
