@@ -1,6 +1,6 @@
 ﻿namespace ConsoleSokobanOOP
 {
-    public abstract class StageObject : IConsoleRenader
+    public abstract class StageObject : IConsoleRender
     {
         public virtual Point Point { get; set; }
         public abstract string RenderString { get; }

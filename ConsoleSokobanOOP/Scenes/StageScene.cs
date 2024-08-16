@@ -3,6 +3,7 @@ using System.Text;
 
 namespace ConsoleSokobanOOP
 {
+
     public struct StageSetup
     {
         public int sizeX;
@@ -17,22 +18,28 @@ namespace ConsoleSokobanOOP
 
     internal class StageScene : Scene
     {
-        private class MapData : IConsoleRenader
+        private class MapData : IRenderGroup
         {
-            #region IConsoleRenader
-            public Point Point { get; set; } = new Point() { x = 0, y = 0 };
-            public string RenderString { get; private set; } = "주의: 맵 출력이 준비되지 않음";
-            public void Render()
+            #region IRenderGroup
+
+            Point IRenderGroup.Anchor { get; set; } = new Point() { x = 3, y = 3 };
+
+            IEnumerable<IConsoleRender> IRenderGroup.Items
             {
-                foreach (Tile tile in map)
+                get
                 {
-                    tile.Render();
+                    foreach (IConsoleRender item in map)
+                    {
+                        yield return item;
+                    }
                 }
             }
-            #endregion IConsoleRenader
+
+            #endregion IRenderGroup
 
             public int SizeX => map.GetLength(0);
             public int SizeY => map.GetLength(1);
+
 
             private Tile[,] map;
             public Tile this[Point pt] => map[pt.x, pt.y];
@@ -48,20 +55,6 @@ namespace ConsoleSokobanOOP
                     }
                 }
             }
-
-            public void UpdateRenderString()
-            {
-                StringBuilder sb = new();
-                for (int i = 0; i < map.GetLength(0); i++)
-                {
-                    for (int j = 0; j < map.GetLength(1); j++)
-                    {
-                        sb.Append(map[i, j].RenderString);
-                    }
-                    sb.AppendLine();
-                }
-                RenderString = sb.ToString();
-            }
         }
 
         private MapData map;
@@ -69,8 +62,8 @@ namespace ConsoleSokobanOOP
         private Player player;
 
         private string textUI = string.Empty;
-        private List<IConsoleRenader> BackGroundLayer;
-        private List<IConsoleRenader> DynamicLayer;
+        private List<IConsoleRender> BackGroundLayer;
+        private PlaneRenderGroup DynamicLayer;
 
         public StageScene(Game game, in StageSetup data) : base(game)
         {
@@ -78,7 +71,7 @@ namespace ConsoleSokobanOOP
             goal = new();
             player = new();
             BackGroundLayer = new();
-            DynamicLayer = new(data.balls.Length + 1);
+            DynamicLayer = new PlaneRenderGroup(data.balls.Length + 1);
             SetupMap(in data);
         }
 
@@ -98,7 +91,7 @@ namespace ConsoleSokobanOOP
             }
 
             // 워프
-            for (int i  = 0; i < data.warpIn.Length; i++)
+            for (int i = 0; i < data.warpIn.Length; i++)
             {
                 Warp warp = new();
 
@@ -107,22 +100,19 @@ namespace ConsoleSokobanOOP
             }
 
             // 플레이어
-            DynamicLayer.Add(player);
+            DynamicLayer.Items.Add(player);
             map[data.player].Entry(player);
 
             // 공
             foreach (var pt in data.balls)
             {
                 Ball ball = new();
-                DynamicLayer.Add(ball);
+                DynamicLayer.Items.Add(ball);
                 ball.Point = pt;
                 map[pt].Entry(ball);
             }
 
             // 고정 출력
-            map.UpdateRenderString();
-            BackGroundLayer.Add(map);
-
             StringBuilder sb = new();
 
             sb.AppendLine("돌아가기: Esc");
@@ -148,6 +138,8 @@ namespace ConsoleSokobanOOP
 
         public override void Render()
         {
+            map.GroupRender();
+
             foreach (var obj in BackGroundLayer)
             {
                 obj.Render();
@@ -158,10 +150,7 @@ namespace ConsoleSokobanOOP
             Console.Write(textUI);
             Console.Write(goal.Score);
 
-            foreach (var obj in DynamicLayer)
-            {
-                obj.Render();
-            }
+            DynamicLayer.GroupRender();
 
             Console.ResetColor();
         }

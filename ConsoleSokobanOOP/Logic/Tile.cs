@@ -1,6 +1,6 @@
 ﻿namespace ConsoleSokobanOOP
 {
-    public class Tile : IConsoleRenader
+    public class Tile : IConsoleRender
     {
         #region IConsoleRender
         public string RenderString { get; set; } = "  ";

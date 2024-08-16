@@ -16,6 +16,11 @@
             this.y = y;
         }
 
+        public static Point operator +(Point a, Point b)
+        {
+            return new Point(a.x + b.x, a.y + b.y);
+        }
+
         public static implicit operator Point((int x, int y) value)
         {
             return new Point(value.x, value.y);
