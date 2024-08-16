@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json.Nodes;
 
 namespace ConsoleSokobanOOP
 {
@@ -9,13 +10,38 @@ namespace ConsoleSokobanOOP
         private static bool[] isDataLoaded = new bool[Constant.Stages];
         public static bool[] isLocked = new bool[Constant.Stages + 1];
 
+        private static RenderMode renderMode = RenderMode.Default;
+
         static DataContainer()
         {
             isLocked = [false, true, true, false, false, false];
         }
 
+        public static bool TryLoadConfig()
+        {
+            if(false == File.Exists("../../../Data/config.json"))
+                return false;
+
+            FileStream stream = File.OpenRead("../../../Data/config.json");
+
+            return true;
+        }
+
+        public static void SaveConfig()
+        {
+            JsonObject jsonConfig = new JsonObject
+            {
+                { "RenderMode", (int)renderMode },
+                { "StageLock", new JsonArray([.. isLocked]) },
+            };
+
+            File.WriteAllText("../../../Data/config.json", jsonConfig.ToString());
+        }
+
         public static void Setup(RenderMode mode)
         {
+            renderMode = mode;
+
             if (mode == RenderMode.Default)
             {
                 strings.Add("Wall", "▦");
@@ -123,5 +149,7 @@ namespace ConsoleSokobanOOP
 
             return ref stageData[stage];
         }
+
+
     }
 }

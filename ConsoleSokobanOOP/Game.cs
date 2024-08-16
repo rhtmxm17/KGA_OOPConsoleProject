@@ -41,7 +41,7 @@ namespace ConsoleSokobanOOP
 
         public void End()
         {
-
+            DataContainer.SaveConfig();
         }
 
         public void ChangeScene(Scene scene)
