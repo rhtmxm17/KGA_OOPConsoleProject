@@ -11,6 +11,7 @@
         public TileState state = TileState.Empty;
 
         // 타일에 속성을 부여하는 물체(Goal, Wall)가 설정하기 위한 이벤트
+        // 다음엔 이벤트를 발생시킨 주체도 던져주자...  Action<Tile, StageObject>
         public event Action<StageObject>? OnEntry;
         public event Action<StageObject>? OnAway;
 

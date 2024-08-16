@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace ConsoleSokobanOOP
 {
@@ -15,47 +16,8 @@ namespace ConsoleSokobanOOP
         public Point[] warpOut;
     }
 
-    internal class StageScene : Scene
+    public partial class StageScene : Scene
     {
-        private class MapData : IRenderGroup
-        {
-            #region IRenderGroup
-
-            public Point Anchor { get; set; } = (0, 0);
-
-            IEnumerable<IConsoleRender> IRenderGroup.Items
-            {
-                get
-                {
-                    foreach (IConsoleRender item in map)
-                    {
-                        yield return item;
-                    }
-                }
-            }
-
-            #endregion IRenderGroup
-
-            public int SizeX => map.GetLength(0);
-            public int SizeY => map.GetLength(1);
-
-
-            private Tile[,] map;
-            public Tile this[Point pt] => map[pt.x, pt.y];
-
-            public MapData(int sizeX, int sizeY)
-            {
-                map = new Tile[sizeX, sizeY];
-                for (int i = 0; i < sizeX; i++)
-                {
-                    for (int j = 0; j < sizeY; j++)
-                    {
-                        map[i, j] = new Tile(new Point() { x = i, y = j });
-                    }
-                }
-            }
-        }
-
         private MapData map;
         private Player player;
         private Goal goal;
@@ -101,6 +63,9 @@ namespace ConsoleSokobanOOP
                 warp.SetAttribute(map[data.warpIn[i]]);
                 warp.Exit.SetAttribute(map[data.warpOut[i]]);
             }
+
+            Trap trap = new(this);
+            trap.SetAttribute(map[(5, 1)]);
 
             // 플레이어
             DynamicLayer.Items.Add(player);
@@ -160,6 +125,31 @@ namespace ConsoleSokobanOOP
 
         public override void Update()
         {
+        }
+
+        public void GameOver(string text)
+        {
+            int y = map.SizeY - text.Length;
+            if (y < 0)
+                y = 0;
+
+            TextUI clear = new TextUI();
+            clear.Point = (map.SizeX >> 1, y >> 1);
+            clear.RenderString = text;
+            DynamicLayer.Items.Add(clear);
+
+            OnKeyInput += key =>
+            {
+                ChangeScene(SceneFactory(SceneType.Select));
+            };
+        }
+
+        public void Remove(StageObject obj)
+        {
+            Debug.Assert(obj == map[obj.Point].Holding);
+
+            map[obj.Point].Away();
+            DynamicLayer.Items.Remove(obj);
         }
 
         private void KeyCheck(ConsoleKey key)
@@ -222,7 +212,7 @@ namespace ConsoleSokobanOOP
                     return;
 
                 default:
-                    throw new ArgumentException();
+                    throw new ArgumentException("잘못된 TileState");
             }
         }
 
@@ -240,15 +230,7 @@ namespace ConsoleSokobanOOP
             if (goal.Score > 0)
                 return;
 
-            Render();
-
-            int y = map.SizeY - 2;
-            if (y < 0)
-                y = 0;
-            Console.SetCursorPosition(y, map.SizeX >> 1);
-            Console.Write("클리어!");
-            Thread.Sleep(2000);
-            ChangeScene(SceneFactory(SceneType.Select));
+            GameOver("클리어!!");
         }
 
         private void PushGame(Direction direction)
@@ -273,6 +255,7 @@ namespace ConsoleSokobanOOP
             DynamicLayer.Anchor = direction.Next(DynamicLayer.Anchor);
             Console.Clear();
         }
-    }
 
+        
+    }
 }
