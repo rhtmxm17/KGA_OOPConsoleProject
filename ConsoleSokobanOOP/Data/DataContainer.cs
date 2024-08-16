@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Text.Json.Nodes;
+using System.Text.Json;
 
 namespace ConsoleSokobanOOP
 {
@@ -12,6 +12,12 @@ namespace ConsoleSokobanOOP
 
         private static RenderMode renderMode = RenderMode.Default;
 
+        private class JsonSave
+        {
+            public int RenderMode { get; set; }
+            public bool[] IsLockedArr { get; set; }
+        }
+
         static DataContainer()
         {
             isLocked = [false, true, true, false, false, false];
@@ -19,23 +25,28 @@ namespace ConsoleSokobanOOP
 
         public static bool TryLoadConfig()
         {
-            if(false == File.Exists("../../../Data/config.json"))
+            if (false == File.Exists("../../../Data/config.json"))
                 return false;
 
             FileStream stream = File.OpenRead("../../../Data/config.json");
+            JsonSave load = JsonSerializer.Deserialize<JsonSave>(stream) ?? throw new Exception("json 파일이 잘못됨");
+
+            isLocked = load.IsLockedArr;
+            Setup((RenderMode)load.RenderMode);
 
             return true;
         }
 
         public static void SaveConfig()
         {
-            JsonObject jsonConfig = new JsonObject
+            JsonSave save = new()
             {
-                { "RenderMode", (int)renderMode },
-                { "StageLock", new JsonArray([.. isLocked]) },
+                RenderMode = (int)renderMode,
+                IsLockedArr = isLocked,
             };
 
-            File.WriteAllText("../../../Data/config.json", jsonConfig.ToString());
+            string json = JsonSerializer.Serialize(save);
+            File.WriteAllText("../../../Data/config.json", json);
         }
 
         public static void Setup(RenderMode mode)

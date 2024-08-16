@@ -17,7 +17,13 @@
 
             OnKeyInput += key =>
             {
-                ChangeScene(SceneFactory(SceneType.Setting));
+                bool result = DataContainer.TryLoadConfig();
+
+                if(result)
+                    ChangeScene(SceneFactory(SceneType.Select));
+                else
+                    ChangeScene(SceneFactory(SceneType.Setting));
+
             };
         }
 
