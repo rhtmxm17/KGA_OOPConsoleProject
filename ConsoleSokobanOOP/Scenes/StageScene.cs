@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text;
 
 namespace ConsoleSokobanOOP
 {
@@ -187,6 +186,10 @@ namespace ConsoleSokobanOOP
                 // 스테이지 선택: Esc
                 case ConsoleKey.Escape:
                     ChangeScene(SceneFactory(SceneType.Select));
+                    return;
+                // 플레이어 색 변경(어지러움)
+                case ConsoleKey.G:
+                    player.IsGamingColor = !player.IsGamingColor;
                     return;
                 default:
                     return;
